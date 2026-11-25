@@ -23,6 +23,7 @@
   <ItemGroup>
     <None Include="mod.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="fixtures\commands.txt" CopyToOutputDirectory="PreserveNewest" />
+    <EmbeddedResource Include="fixtures\commands.txt" LogicalName="Wsii.P1H.commands.txt" />
   </ItemGroup>
 
 </Project>

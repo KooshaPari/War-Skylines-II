@@ -62,8 +62,12 @@ the real `Game.dll`, `Colossal.Core.dll`, `Unity.Entities.dll` and `UnityEngine.
 | `Mod` implements `Game.Modding.IMod` | ok |
 | `P1HProbeSystem` derives from `Game.GameSystemBase` | ok |
 | assembly references `Game` | ok |
+| embedded fixture `Wsii.P1H.commands.txt` present | ok |
 
 `PASS mod assembly is loadable and API-correct`
+
+That is a contract check, not acceptance. Acceptance came from running the game; see
+`SLICE_1.md` for the log the deployed mod wrote inside `Cities2.exe`.
 
 ## 4. Deployment seam
 
@@ -75,22 +79,38 @@ the real `Game.dll`, `Colossal.Core.dll`, `Unity.Entities.dll` and `UnityEngine.
 { "id": "WsiiP1H", "author": "KooshaPari", "version": "0.1.0", "dependencies": [] }
 ```
 
-## 5. Activation seam, and why it is not automated
+## 5. Activation seam, verified
 
-`content_load.json` lists enabled content as absolute `path` entries. The playset files under
-`playsets_backup\*.json` store `{displayName, enabled, position, pdxId}` and, across all four
-populated playsets, contain **zero** entries without a `pdxId`. Local folder mods such as
-`WarSkylinesII` and `.CivicSurvival` therefore are not activated through the playset file: Skyve,
-which is installed here, owns the local-mod list (`ModsData\Skyve\ModDllCache.json` contains
-`WarSkylinesII`).
+`content_load.json` holds `enabledMods` as absolute `path` entries. Adding one entry for a local
+folder mod is sufficient:
 
-Editing either surface is not a safe automated step:
+```json
+{ "path": "C:\\Users\\koosh\\AppData\\LocalLow\\Colossal Order\\Cities Skylines II\\Mods\\WsiiP1H" }
+```
 
-- the game was running with a live session, and the launcher rewrites `content_load.json`;
-- Skyve's cache is the user's mod-manager state, not ours to rewrite.
+Verified: after that single insertion and a game start, the mod's `OnLoad` ran inside `Cities2.exe`
+(see `SLICE_1.md`). No launcher toggle was needed, and the playset files were not touched.
 
-So activation is a single explicit toggle in Skyve or the launcher, followed by a game restart.
-That restart is the only remaining step between this build and in-game evidence.
+Two corrections to earlier assumptions, both established by running the game:
+
+- The playset files under `playsets_backup\*.json` store `{displayName, enabled, position, pdxId}`
+  and contain **zero** entries without a `pdxId`, which is why local folder mods never appear
+  there. They are not the enablement surface for local mods; `content_load.json` is.
+- The Paradox Launcher was **not** required. Launching `Cities2.exe` directly loaded the enabled
+  mod set, including ours.
+
+Caution when editing this file: a literal PowerShell replace through `cmd.exe` produced doubled
+backslashes and a path the game would not match. Validate after writing by parsing the JSON and
+asserting `Test-Path $entry.path`. A backup was kept at `content_load.json.bak-p1h`.
+
+## 5a. Path resolution inside a game-loaded mod
+
+`typeof(Mod).Assembly.Location` is **empty** when the game loads a managed mod from its own loader.
+Any path derived from it silently becomes the install root, which is read-only and wrong. The
+first in-game run failed exactly this way: the fixture was not found and the log could not be
+written. The mod now uses `Application.persistentDataPath\Mods\WsiiP1H` unless the assembly
+location demonstrably contains `mod.json`, ships its fixture as an embedded resource, and logs the
+resolved directory and log path so the log proves which branch ran.
 
 ## 6. Where P1-R semantics land in game
 

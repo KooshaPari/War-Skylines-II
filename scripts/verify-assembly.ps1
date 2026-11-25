@@ -51,6 +51,10 @@ Check 'system-base' $derives ('GameSystemBase <- ' + $(if ($sysType) { $sysType.
 $refsGame = @($mod.GetReferencedAssemblies() | Where-Object { $_.Name -eq 'Game' }).Count -eq 1
 Check 'references-game' $refsGame 'Game'
 
+$resources = @($mod.GetManifestResourceNames())
+$hasFixture = $resources -contains 'Wsii.P1H.commands.txt'
+Check 'embedded-fixture' $hasFixture ($resources -join ',')
+
 if ($failures -eq 0) { Write-Output 'PASS mod assembly is loadable and API-correct' ; exit 0 }
 Write-Output ("FAIL " + $failures + " check(s)")
 exit 1

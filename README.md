@@ -41,11 +41,18 @@ Observed on 2026-11-25:
 
 - build: 0 warnings, 0 errors
 - semantics checks: 14 checks, `PASS 8 fixture lines, 2 accepted, 1 replayed, 5 rejected`
-- assembly checks: 6 checks, `PASS mod assembly is loadable and API-correct`
+- assembly checks: 7 checks, `PASS mod assembly is loadable and API-correct`
 - deploy: `WsiiP1H.dll`, `mod.json`, `fixtures\commands.txt` copied to `Mods\WsiiP1H`
+- **in game**: `Cities2.exe` loaded the mod and wrote `Mods\WsiiP1H\p1h.log` with
+  `OnLoad enter`, all eight admissions matching the offline results, `fixture source=embedded:...`,
+  `system-registered P1HProbeSystem phase=GameSimulation`, `OnLoad exit`. Quoted in `docs/SLICE_1.md`.
 
 ## Not yet verified
 
-In-game execution. The assembly builds and matches the API, and it is deployed, but it has not
-been loaded by a running game. Activation of a local folder mod here is owned by Skyve, and a
-running `Cities2.exe` session (PID 44764) had to be left alone. See `docs/SLICE_1.md`.
+Simulation tick. `P1HProbeSystem` is registered and would log heartbeats, but that requires a city
+to be simulating, which means loading a save through the game menu. Everything up to and including
+`OnLoad` is confirmed by a real run.
+
+The first in-game run also proved the offline suite insufficient on its own: it exposed an empty
+`Assembly.Location` that broke fixture and log resolution while all static checks passed. Both
+defects and their fixes are recorded in `docs/SLICE_1.md`.
