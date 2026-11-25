@@ -66,6 +66,18 @@ A heartbeat requires a city to simulate. Reaching a city means clicking through 
 a save, which is GUI automation of the user's own game session; it was not done. The system is
 registered and will tick as soon as a city loads.
 
+### Non-GUI routes checked before accepting that
+
+| Route | Finding |
+|---|---|
+| CLI save-loading argument | ASCII and method-name extraction from `Game.dll` yields `ProcessCommandLine`, `GetCommandLineArgs`, `MergeAdditionalCommandLineArguments`, `m_AdditionalCommandLineToggles`, but no save-loading option literal. No documented token could be confirmed, so guessing would cost a ~12-minute boot per attempt. |
+| `continue_game.json` auto-resume flag | The file does not exist in the user folder, so its schema is unknown and writing a guess is not evidence. |
+| Skyve launch settings | `LaunchSettings` exposes `LoadSaveGame`, `SaveToLoad`, `StartNewGame`, `MapToLoad`, but Skyve writes those into the launcher's own launch, not into a file we can drive headlessly. |
+| Type enumeration of `Colossal.Core` / `Game` | Reflection-only `GetTypes()` fails on both assemblies (incomplete dependency resolution). Named-type lookups work, enumeration does not, so an option model cannot be discovered that way. |
+
+One save is available for a future attempt: `Saves\17-November-09-33-36.cok` (59,000,124 bytes,
+2026-11-17). With a confirmed CLI token or a manual save load, S1-6 becomes a single launch.
+
 ## Next slice
 
 Replace the embedded fixture with a command source the game owns: one `ISerializable` component
