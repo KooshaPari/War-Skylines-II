@@ -14,6 +14,7 @@ semantics (proved offline in `wsii-enhancement/p1r`) into the real game runtime.
 | `src/Wsii.P1H/CommandLedger.cs` | Game-free command admission: idempotent replay, payload conflict, stale revision, past tick |
 | `src/Wsii.P1H/fixtures/commands.txt` | Shared fixture, replayed identically by the mod and by the offline checks |
 | `tests/Wsii.P1H.Semantics/` | Zero-dependency console checks over that same fixture |
+| `scripts/compare-log.ps1` | Diff the game's admission log against the offline verdicts |
 | `scripts/verify-assembly.ps1` | Reflection-only assertion that the built DLL matches the game API |
 | `scripts/deploy.ps1` | Copy build output into the local `Mods\WsiiP1H` folder |
 | `docs/INTEGRATION_MAP.md` | The verified integration surface, with evidence per claim |

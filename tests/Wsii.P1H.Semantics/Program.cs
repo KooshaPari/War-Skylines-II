@@ -13,8 +13,10 @@ namespace Wsii.P1H.Semantics
     {
         private static int _failures;
 
-        private static int Main()
+        private static int Main(string[] args)
         {
+            bool emit = args != null && args.Length > 0 && args[0] == "emit";
+
             string fixture = Path.Combine(AppContext.BaseDirectory, "fixtures", "commands.txt");
             if (!File.Exists(fixture))
             {
@@ -49,6 +51,16 @@ namespace Wsii.P1H.Semantics
 
                 AdmissionResult result = ledger.Admit(envelope, currentTick: 0);
                 results.Add(result.ToString());
+
+                if (emit)
+                {
+                    Console.WriteLine("VERDICT|" + envelope.Id + "|" + result);
+                }
+            }
+
+            if (emit)
+            {
+                return 0;
             }
 
             Check("line-count", results.Count, 8);

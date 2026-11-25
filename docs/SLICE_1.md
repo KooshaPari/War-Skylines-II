@@ -40,6 +40,25 @@ Every verdict matches the offline checks in `tests/Wsii.P1H.Semantics` exactly: 
 2 accepted, 1 replayed, 5 rejected, same reasons, same order. `UpdateAt<P1HProbeSystem>` was
 accepted by the real `UpdateSystem`, so the registration path is real, not merely compilable.
 
+That match is machine-checked, not eyeballed. `scripts/compare-log.ps1` re-runs the offline
+contract in emit mode and diffs the verdict sequence against the log:
+
+```
+offline=8 ingame=8
+ok   [0] cmd-1|Accepted:ok
+ok   [1] cmd-1|Replayed:duplicate-id
+ok   [2] cmd-1|Rejected:payload-conflict:cmd-1
+ok   [3] cmd-2|Rejected:unsupported-type:teleport
+ok   [4] cmd-3|Rejected:stale-revision:0
+ok   [5] cmd-4|Rejected:past-tick:-5<0
+ok   [6] cmd-5|Accepted:ok
+ok   [7] |Rejected:missing-id
+PASS in-game verdicts match the offline contract exactly
+```
+
+`scripts/verify-assembly.ps1` also passes against the **deployed** copy, and `scripts/deploy.ps1`
+now asserts SHA-256 parity for all three installed files, so a stale deployment cannot look green.
+
 ## Defects the real run found that inspection did not
 
 The first in-game run (build 10,240 bytes) failed in two ways while every static check passed:

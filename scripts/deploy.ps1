@@ -27,3 +27,20 @@ Write-Output ("deployed " + $dest)
 Get-ChildItem -Recurse $dest | ForEach-Object {
     Write-Output ("  " + $_.FullName.Substring($dest.Length + 1) + " " + $_.Length + " bytes")
 }
+
+function Get-Sha256([string]$path) {
+    $sha = [System.Security.Cryptography.SHA256]::Create()
+    $stream = [System.IO.File]::OpenRead($path)
+    try { return ([System.BitConverter]::ToString($sha.ComputeHash($stream)) -replace '-', '') }
+    finally { $stream.Close(); $sha.Clear() }
+}
+
+foreach ($pair in @(
+    @((Join-Path $Source 'WsiiP1H.dll'), (Join-Path $dest 'WsiiP1H.dll')),
+    @((Join-Path $Source 'mod.json'), (Join-Path $dest 'mod.json')),
+    @((Join-Path $fixtures 'commands.txt'), (Join-Path $destFixtures 'commands.txt')))) {
+    $src = Get-Sha256 $pair[0]
+    $dst = Get-Sha256 $pair[1]
+    if ($src -ne $dst) { throw ("deploy mismatch " + $pair[1] + " src=" + $src + " dst=" + $dst) }
+    Write-Output ("parity-ok " + (Split-Path $pair[1] -Leaf) + " sha256=" + $dst.Substring(0, 16))
+}
