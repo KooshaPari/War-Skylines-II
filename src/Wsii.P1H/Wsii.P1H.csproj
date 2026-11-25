@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <AssemblyName>WsiiP1H</AssemblyName>
+    <RootNamespace>Wsii.P1H</RootNamespace>
+    <OutputPath>..\..\artifacts\$(Configuration)\</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <Nullable>disable</Nullable>
+    <DebugType>none</DebugType>
+    <GameManaged Condition="'$(GameManaged)' == ''">C:\Program Files (x86)\Steam\steamapps\common\Cities Skylines II\Cities2_Data\Managed</GameManaged>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="Game"><HintPath>$(GameManaged)\Game.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Unity.Entities"><HintPath>$(GameManaged)\Unity.Entities.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Colossal.Core"><HintPath>$(GameManaged)\Colossal.Core.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.CoreModule"><HintPath>$(GameManaged)\UnityEngine.CoreModule.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine"><HintPath>$(GameManaged)\UnityEngine.dll</HintPath><Private>false</Private></Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="mod.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="fixtures\commands.txt" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

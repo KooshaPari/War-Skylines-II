@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>disable</Nullable>
+    <AssemblyName>Wsii.P1H.Semantics</AssemblyName>
+    <RootNamespace>Wsii.P1H.Semantics</RootNamespace>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="..\..\src\Wsii.P1H\CommandLedger.cs" Link="CommandLedger.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\src\Wsii.P1H\fixtures\commands.txt" Link="fixtures\commands.txt" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

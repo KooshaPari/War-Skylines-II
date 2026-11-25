@@ -1,0 +1,12 @@
+# P1-H slice 1 command fixture
+# id | type | tick | revision | payload
+# Expected against currentTick=0 and minRevision=1:
+#   2 accepted, 1 replayed, 5 rejected
+cmd-1|noop|0|1|{}
+cmd-1|noop|0|1|{}
+cmd-1|noop|0|1|{"x":1}
+cmd-2|teleport|0|1|{}
+cmd-3|noop|0|0|{}
+cmd-4|noop|-5|1|{}
+cmd-5|transfer|4|2|{"qty":3}
+|noop|0|1|{}
