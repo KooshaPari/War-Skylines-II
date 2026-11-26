@@ -43,10 +43,13 @@ if ($modType) {
 }
 Check 'implements-imod' $implements 'Game.Modding.IMod'
 
-$sysType = $mod.GetType('Wsii.P1H.P1HProbeSystem', $false)
-$derives = $false
-if ($sysType) { $derives = $sysType.BaseType.FullName -eq 'Game.GameSystemBase' }
-Check 'system-base' $derives ('GameSystemBase <- ' + $(if ($sysType) { $sysType.BaseType.FullName } else { 'type-missing' }))
+foreach ($sysName in @('Wsii.P1H.P1HProbeSystem', 'Wsii.P1H.P1HMenuProbeSystem')) {
+    $sysType = $mod.GetType($sysName, $false)
+    $chain = @()
+    $b = if ($sysType) { $sysType.BaseType } else { $null }
+    while ($b) { $chain += $b.FullName; $b = $b.BaseType }
+    Check 'system-base' ($chain -contains 'Game.GameSystemBase') ($sysName + ' <- ' + ($chain -join ' <- '))
+}
 
 $refsGame = @($mod.GetReferencedAssemblies() | Where-Object { $_.Name -eq 'Game' }).Count -eq 1
 Check 'references-game' $refsGame 'Game'

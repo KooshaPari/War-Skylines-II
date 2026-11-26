@@ -13,7 +13,24 @@ Verified 2026-11-25 by running the real `Cities2.exe`, not by inspection.
 | S1-3 | Command admission is correct and idempotent | `tests/Wsii.P1H.Semantics`, 14 checks | **PASS** |
 | S1-4 | The mod is installed in the game's mods folder with a valid manifest | `scripts/deploy.ps1` output | **PASS** |
 | S1-5 | `OnLoad` runs in the real game and writes `p1h.log` with the expected admissions | `Mods\WsiiP1H\p1h.log` after a game start | **PASS** |
-| S1-6 | `P1HProbeSystem` ticks during simulation | `heartbeat` lines in `p1h.log` after a city loads | **NOT_RUN** |
+| S1-6 | `P1HProbeSystem` ticks during simulation | `heartbeat phase=GameSimulation` in `p1h.log` after a city loads | **NOT_RUN** |
+| S1-6a | `UpdateSystem` actually invokes our systems, not just accepts registration | `heartbeat phase=LateUpdate` in `p1h.log` with no city loaded | **PASS** |
+
+## S1-6a evidence
+
+A second probe is registered at `SystemUpdatePhase.LateUpdate`, which runs without a city. Observed
+in the real game on 2026-11-26:
+
+```
+2026-11-26T07:38:50.836Z [WsiiP1H] system-registered P1HMenuProbeSystem phase=LateUpdate
+2026-11-26T07:38:50.836Z [WsiiP1H] OnLoad exit
+2026-11-26T07:49:18.513Z [WsiiP1H] heartbeat phase=LateUpdate ticks=600
+```
+
+600 ticks over roughly ten and a half minutes. That closes the question the registration alone left
+open: `Game.GameSystemBase.OnUpdate` is genuinely called back by the game's update loop. It is
+explicitly **not** evidence that the `GameSimulation` registration ticks, because no city was
+loaded.
 
 ## S1-5 evidence, quoted from the game
 
@@ -81,9 +98,10 @@ reason the real run was required, and the reason S1-5 is reported from a log rat
 
 ## Why S1-6 is still open
 
-A heartbeat requires a city to simulate. Reaching a city means clicking through the main menu into
-a save, which is GUI automation of the user's own game session; it was not done. The system is
-registered and will tick as soon as a city loads.
+A heartbeat requires a city to simulate. The invocation mechanism is now proven (S1-6a), so what
+remains is only the `GameSimulation` phase itself, which is inert until a save is loaded. Reaching a
+city means clicking through the main menu, which is GUI automation of the user's own game session;
+it was not done.
 
 ### Non-GUI routes checked before accepting that
 

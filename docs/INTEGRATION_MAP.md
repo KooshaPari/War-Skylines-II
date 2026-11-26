@@ -60,7 +60,7 @@ the real `Game.dll`, `Colossal.Core.dll`, `Unity.Entities.dll` and `UnityEngine.
 | `Game.Modding.IMod` resolves in `Game.dll` | ok |
 | entry type `Wsii.P1H.Mod` present | ok |
 | `Mod` implements `Game.Modding.IMod` | ok |
-| `P1HProbeSystem` derives from `Game.GameSystemBase` | ok |
+| `P1HProbeSystem` and `P1HMenuProbeSystem` derive from `Game.GameSystemBase` | ok |
 | assembly references `Game` | ok |
 | embedded fixture `Wsii.P1H.commands.txt` present | ok |
 

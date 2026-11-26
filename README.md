@@ -42,17 +42,19 @@ Observed on 2026-11-25:
 
 - build: 0 warnings, 0 errors
 - semantics checks: 14 checks, `PASS 8 fixture lines, 2 accepted, 1 replayed, 5 rejected`
-- assembly checks: 7 checks, `PASS mod assembly is loadable and API-correct`
-- deploy: `WsiiP1H.dll`, `mod.json`, `fixtures\commands.txt` copied to `Mods\WsiiP1H`
+- assembly checks: 8 checks, `PASS mod assembly is loadable and API-correct`
+- deploy: `WsiiP1H.dll`, `mod.json`, `fixtures\commands.txt` copied to `Mods\WsiiP1H`, SHA-256 parity asserted
 - **in game**: `Cities2.exe` loaded the mod and wrote `Mods\WsiiP1H\p1h.log` with
   `OnLoad enter`, all eight admissions matching the offline results, `fixture source=embedded:...`,
-  `system-registered P1HProbeSystem phase=GameSimulation`, `OnLoad exit`. Quoted in `docs/SLICE_1.md`.
+  both systems registered, `OnLoad exit`. Quoted in `docs/SLICE_1.md`.
+- **in game, ticking**: `heartbeat phase=LateUpdate ticks=600` after ~10.5 minutes at the main menu,
+  so the game's update loop really does call our `OnUpdate`. Quoted in `docs/SLICE_1.md`.
 
 ## Not yet verified
 
-Simulation tick. `P1HProbeSystem` is registered and would log heartbeats, but that requires a city
-to be simulating, which means loading a save through the game menu. Everything up to and including
-`OnLoad` is confirmed by a real run.
+The `GameSimulation` phase itself. Both probes register and one is proven to tick, but
+`heartbeat phase=GameSimulation` needs a city simulating, which means loading a save through the
+game menu.
 
 The first in-game run also proved the offline suite insufficient on its own: it exposed an empty
 `Assembly.Location` that broke fixture and log resolution while all static checks passed. Both

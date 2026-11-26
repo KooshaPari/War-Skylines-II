@@ -41,6 +41,9 @@ namespace Wsii.P1H
 
                 updateSystem.UpdateAt<P1HProbeSystem>(SystemUpdatePhase.GameSimulation);
                 Log("system-registered P1HProbeSystem phase=GameSimulation");
+
+                updateSystem.UpdateAt<P1HMenuProbeSystem>(SystemUpdatePhase.LateUpdate);
+                Log("system-registered P1HMenuProbeSystem phase=LateUpdate");
             }
             catch (Exception ex)
             {
