@@ -107,7 +107,7 @@ it was not done.
 
 | Route | Finding |
 |---|---|
-| CLI save-loading argument | ASCII and method-name extraction from `Game.dll` yields `ProcessCommandLine`, `GetCommandLineArgs`, `MergeAdditionalCommandLineArguments`, `m_AdditionalCommandLineToggles`, but no save-loading option literal. No documented token could be confirmed, so guessing would cost a ~12-minute boot per attempt. |
+| CLI save-loading argument | Scanned `Game.dll` in both ASCII and UTF-16: `ProcessCommandLine`, `GetCommandLineArgs`, `MergeAdditionalCommandLineArguments`, `m_AdditionalCommandLineToggles` exist as method names, but `loadSave`, `SaveToLoad`, `continue_game`, `-map`, `devMode` and `developerMode` appear as literals in neither encoding. There is no token to pass. |
 | `continue_game.json` auto-resume flag | **Tested, negative.** Wrote `{"Title":"17-November-09-33-36","IsSaveInCloud":false,"IsCloudSave":false}` and launched `Cities2.exe`. Result: `heartbeat phase=LateUpdate ticks=600` with zero `GameSimulation` heartbeats, so the game sat at the main menu and never loaded the city. The file is launcher-side resume state, confirmed by both the launcher bundle text and this run. |
 | Skyve launch settings | `LaunchSettings` exposes `LoadSaveGame`, `SaveToLoad`, `StartNewGame`, `MapToLoad`, but no such parameter names exist in the launcher bundle (`loadSave`, `startNewGame`, `saveToLoad`, `mapToLoad`, `resumeSave` all absent from `app.asar`), so they are Skyve-side and not a headless interface. |
 | Launcher flags | `app.asar` uses a `--pdxl<Name>` convention; no `--pdxlLoadSave`, `--pdxlStartNewGame` or `--pdxlMapToLoad` exists. The launcher opened on `steam://rungameid/949230` and waited for a click. |
