@@ -14,6 +14,7 @@ semantics (proved offline in `wsii-enhancement/p1r`) into the real game runtime.
 | `src/Wsii.P1H/CommandLedger.cs` | Game-free command admission: idempotent replay, payload conflict, stale revision, past tick |
 | `src/Wsii.P1H/fixtures/commands.txt` | Shared fixture, replayed identically by the mod and by the offline checks |
 | `tests/Wsii.P1H.Semantics/` | Zero-dependency console checks over that same fixture |
+| `scripts/check.ps1` | One gate: build, semantics, artifact checks, deploy freshness. `-Deploy` also installs |
 | `scripts/compare-log.ps1` | Diff the game's admission log against the offline verdicts |
 | `scripts/verify-assembly.ps1` | Reflection-only assertion that the built DLL matches the game API |
 | `scripts/deploy.ps1` | Copy build output into the local `Mods\WsiiP1H` folder |
@@ -33,10 +34,16 @@ Override with `-p:GameManaged=<path>` on another install.
 ## Verify
 
 ```powershell
-dotnet run --project tests\Wsii.P1H.Semantics -c Release
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts\verify-assembly.ps1
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts\deploy.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\check.ps1            # gate, no install
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\check.ps1 -Deploy    # gate, then install
 ```
+
+The gate runs build, semantics, artifact checks against both the build output and the installed
+copy, and reports `deploy-in-sync` or `STALE-DEPLOY`. Builds are deterministic, so that comparison
+is meaningful.
+
+This lane does **not** open pull requests against `realbalakona/War-Skylines-II`. Work stays in the
+`KooshaPari` fork.
 
 Observed on 2026-11-25:
 

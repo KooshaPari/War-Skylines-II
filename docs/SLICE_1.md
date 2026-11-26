@@ -9,8 +9,8 @@ Verified 2026-11-25 by running the real `Cities2.exe`, not by inspection.
 | # | Criterion | How it is observed | Result |
 |---|---|---|---|
 | S1-1 | The mod compiles against the installed `Game.dll` | `dotnet build`: 0 warnings, 0 errors | **PASS** |
-| S1-2 | The built assembly implements `Game.Modding.IMod` and derives the system from `Game.GameSystemBase` | `scripts/verify-assembly.ps1`, 6 checks | **PASS** |
-| S1-3 | Command admission is correct and idempotent | `tests/Wsii.P1H.Semantics`, 14 checks | **PASS** |
+| S1-2 | The built assembly implements `Game.Modding.IMod` and derives the system from `Game.GameSystemBase` | `scripts/verify-assembly.ps1`, 8 checks | **PASS** |
+| S1-3 | Command admission is correct and idempotent | `tests/Wsii.P1H.Semantics`, 28 checks | **PASS** |
 | S1-4 | The mod is installed in the game's mods folder with a valid manifest | `scripts/deploy.ps1` output | **PASS** |
 | S1-5 | `OnLoad` runs in the real game and writes `p1h.log` with the expected admissions | `Mods\WsiiP1H\p1h.log` after a game start | **PASS** |
 | S1-6 | `P1HProbeSystem` ticks during simulation | `heartbeat phase=GameSimulation` in `p1h.log` after a city loads | **NOT_RUN** |
