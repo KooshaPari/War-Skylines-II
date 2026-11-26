@@ -41,7 +41,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts\deploy.ps1
 Observed on 2026-11-25:
 
 - build: 0 warnings, 0 errors
-- semantics checks: 14 checks, `PASS 8 fixture lines, 2 accepted, 1 replayed, 5 rejected`
+- semantics checks: 28 checks (14 fixture verdicts + 14 edge cases), `PASS 8 fixture lines, 2 accepted, 1 replayed, 5 rejected`
 - assembly checks: 8 checks, `PASS mod assembly is loadable and API-correct`
 - deploy: `WsiiP1H.dll`, `mod.json`, `fixtures\commands.txt` copied to `Mods\WsiiP1H`, SHA-256 parity asserted
 - **in game**: `Cities2.exe` loaded the mod and wrote `Mods\WsiiP1H\p1h.log` with
