@@ -108,8 +108,9 @@ it was not done.
 | Route | Finding |
 |---|---|
 | CLI save-loading argument | ASCII and method-name extraction from `Game.dll` yields `ProcessCommandLine`, `GetCommandLineArgs`, `MergeAdditionalCommandLineArguments`, `m_AdditionalCommandLineToggles`, but no save-loading option literal. No documented token could be confirmed, so guessing would cost a ~12-minute boot per attempt. |
-| `continue_game.json` auto-resume flag | The file does not exist in the user folder, so its schema is unknown and writing a guess is not evidence. |
-| Skyve launch settings | `LaunchSettings` exposes `LoadSaveGame`, `SaveToLoad`, `StartNewGame`, `MapToLoad`, but Skyve writes those into the launcher's own launch, not into a file we can drive headlessly. |
+| `continue_game.json` auto-resume flag | Absent in the user folder. Its role was then read out of the launcher bundle: it is launcher-side resume state, holding a save name in a configurable field (default `TITLE`) plus a cloud flag. The game does not read it, so writing one cannot auto-load a city. |
+| Skyve launch settings | `LaunchSettings` exposes `LoadSaveGame`, `SaveToLoad`, `StartNewGame`, `MapToLoad`, but no such parameter names exist in the launcher bundle (`loadSave`, `startNewGame`, `saveToLoad`, `mapToLoad`, `resumeSave` all absent from `app.asar`), so they are Skyve-side and not a headless interface. |
+| Launcher flags | `app.asar` uses a `--pdxl<Name>` convention; no `--pdxlLoadSave`, `--pdxlStartNewGame` or `--pdxlMapToLoad` exists. The launcher opened on `steam://rungameid/949230` and waited for a click. |
 | Type enumeration of `Colossal.Core` / `Game` | Reflection-only `GetTypes()` fails on both assemblies (incomplete dependency resolution). Named-type lookups work, enumeration does not, so an option model cannot be discovered that way. |
 
 One save is available for a future attempt: `Saves\17-November-09-33-36.cok` (59,000,124 bytes,
