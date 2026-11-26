@@ -39,10 +39,20 @@ if (Test-Path $deployed) {
         $f = [System.IO.File]::OpenRead($p)
         try { return ([System.BitConverter]::ToString($s.ComputeHash($f)) -replace '-', '') } finally { $f.Close(); $s.Clear() }
     }
-    if ((Get-Sha $built) -ne (Get-Sha $deployed)) {
-        Write-Output 'STALE-DEPLOY build differs from the installed copy; run with -Deploy'
+    $pairs = @(
+        @((Join-Path $root 'artifacts\Release\WsiiP1H.dll'), (Join-Path $ModsRoot 'WsiiP1H\WsiiP1H.dll')),
+        @((Join-Path $root 'artifacts\Release\mod.json'), (Join-Path $ModsRoot 'WsiiP1H\mod.json')),
+        @((Join-Path $root 'artifacts\Release\fixtures\commands.txt'), (Join-Path $ModsRoot 'WsiiP1H\fixtures\commands.txt'))
+    )
+    $drift = @()
+    foreach ($pair in $pairs) {
+        if (-not (Test-Path $pair[1])) { $drift += (Split-Path $pair[1] -Leaf) + ':missing'; continue }
+        if ((Get-Sha $pair[0]) -ne (Get-Sha $pair[1])) { $drift += (Split-Path $pair[1] -Leaf) + ':differs' }
+    }
+    if ($drift.Count -gt 0) {
+        Write-Output ('STALE-DEPLOY ' + ($drift -join ', ') + '; run with -Deploy')
     } else {
-        Write-Output 'deploy-in-sync'
+        Write-Output 'deploy-in-sync (dll, mod.json, fixture)'
     }
 } else {
     Write-Output 'deploy-absent (nothing installed to compare)'

@@ -32,6 +32,34 @@ open: `Game.GameSystemBase.OnUpdate` is genuinely called back by the game's upda
 explicitly **not** evidence that the `GameSimulation` registration ticks, because no city was
 loaded.
 
+## Gate self-test
+
+A gate that cannot fail proves nothing, so `scripts/selftest-gate.ps1` injects four faults against
+scratch copies and asserts the gate rejects each:
+
+| Injected fault | Expected | Observed |
+|---|---|---|
+| Installed `fixtures\commands.txt` drifted from the build | `STALE-DEPLOY` | `STALE-DEPLOY commands.txt:differs` |
+| `-GameManaged` pointed at a non-existent directory | `GATE-FAIL` | `GATE-FAIL` |
+| `verify-assembly.ps1` given `Colossal.Core.dll` instead of our mod | exit 1 | `exit=1` |
+| `verify-assembly.ps1` given a binary with its first 64 bytes zeroed | exit 1 | `exit=1` |
+
+`SELFTEST-PASS gate rejects stale, missing-abi, foreign and corrupt inputs`
+
+Two real defects were found by writing it:
+
+1. `verify-assembly.ps1` crashed with "Cannot index into a null array" on an assembly that lacks
+   `TargetFrameworkAttribute`, instead of reporting a clean failure. Fixed by guarding the
+   attribute read.
+2. The freshness check compared only `WsiiP1H.dll`, so drift in `mod.json` or the fixture was
+   invisible. It now hashes all three shipped files and names which one differs.
+
+Build reproducibility was measured directly rather than assumed: an incremental build and a
+`-t:Rebuild` both produced `9CF833619243A83715EF3998...`, identical to the preceding build, so the
+freshness comparison is meaningful. One caveat recorded by the first run: a property-only edit can
+leave MSBuild's incremental output stale, so the gate rightly reported `WsiiP1H.dll:differs` and
+`-Deploy` resolved it.
+
 ## S1-5 evidence, quoted from the game
 
 Log written by the deployed mod inside the real game process:

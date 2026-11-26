@@ -29,7 +29,9 @@ $mod = [System.Reflection.Assembly]::ReflectionOnlyLoadFrom((Resolve-Path $Assem
 $game = [System.Reflection.Assembly]::ReflectionOnlyLoadFrom((Join-Path $GameManaged 'Game.dll'))
 
 $target = $mod.GetCustomAttributesData() | Where-Object { $_.AttributeType.FullName -eq 'System.Runtime.Versioning.TargetFrameworkAttribute' } | Select-Object -First 1
-Check 'target-framework' ($target -ne $null -and $target.ConstructorArguments[0].Value -like '.NETFramework,Version=v4.8*') ([string]$target.ConstructorArguments[0].Value)
+$targetName = ''
+if ($target -and $target.ConstructorArguments.Count -gt 0) { $targetName = [string]$target.ConstructorArguments[0].Value }
+Check 'target-framework' ($targetName -like '.NETFramework,Version=v4.8*') $targetName
 
 $imod = $game.GetType('Game.Modding.IMod', $false)
 Check 'game-imod-resolved' ($imod -ne $null) 'Game.Modding.IMod'
