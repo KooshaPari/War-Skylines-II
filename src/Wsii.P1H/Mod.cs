@@ -44,6 +44,9 @@ namespace Wsii.P1H
 
                 updateSystem.UpdateAt<P1HMenuProbeSystem>(SystemUpdatePhase.LateUpdate);
                 Log("system-registered P1HMenuProbeSystem phase=LateUpdate");
+
+                updateSystem.UpdateAt<AutoLoadSystem>(SystemUpdatePhase.LateUpdate);
+                Log("system-registered AutoLoadSystem phase=LateUpdate");
             }
             catch (Exception ex)
             {

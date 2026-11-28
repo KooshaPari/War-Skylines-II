@@ -29,6 +29,12 @@ Write-Output '== verify-build'
 & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot 'verify-assembly.ps1') -Assembly $built -GameManaged $GameManaged
 if ($LASTEXITCODE -ne 0) { Write-Output 'GATE-FAIL verify-build'; exit 1 }
 
+if ($Deploy) {
+    Write-Output '== deploy'
+    & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot 'deploy.ps1') -Source (Join-Path $root 'artifacts\Release') -ModsRoot $ModsRoot
+    if ($LASTEXITCODE -ne 0) { Write-Output 'GATE-FAIL deploy'; exit 1 }
+}
+
 if (Test-Path $deployed) {
     Write-Output '== verify-deployed'
     & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot 'verify-assembly.ps1') -Assembly $deployed -GameManaged $GameManaged
@@ -56,12 +62,6 @@ if (Test-Path $deployed) {
     }
 } else {
     Write-Output 'deploy-absent (nothing installed to compare)'
-}
-
-if ($Deploy) {
-    Write-Output '== deploy'
-    & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot 'deploy.ps1') -Source (Join-Path $root 'artifacts\Release') -ModsRoot $ModsRoot
-    if ($LASTEXITCODE -ne 0) { Write-Output 'GATE-FAIL deploy'; exit 1 }
 }
 
 Write-Output 'GATE-PASS'

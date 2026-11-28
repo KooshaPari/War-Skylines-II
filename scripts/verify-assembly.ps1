@@ -45,7 +45,7 @@ if ($modType) {
 }
 Check 'implements-imod' $implements 'Game.Modding.IMod'
 
-foreach ($sysName in @('Wsii.P1H.P1HProbeSystem', 'Wsii.P1H.P1HMenuProbeSystem')) {
+foreach ($sysName in @('Wsii.P1H.P1HProbeSystem', 'Wsii.P1H.P1HMenuProbeSystem', 'Wsii.P1H.AutoLoadSystem')) {
     $sysType = $mod.GetType($sysName, $false)
     $chain = @()
     $b = if ($sysType) { $sysType.BaseType } else { $null }
