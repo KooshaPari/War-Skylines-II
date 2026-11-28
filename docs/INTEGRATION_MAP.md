@@ -96,8 +96,12 @@ Two corrections to earlier assumptions, both established by running the game:
 - The playset files under `playsets_backup\*.json` store `{displayName, enabled, position, pdxId}`
   and contain **zero** entries without a `pdxId`, which is why local folder mods never appear
   there. They are not the enablement surface for local mods; `content_load.json` is.
-- The Paradox Launcher was **not** required. Launching `Cities2.exe` directly loaded the enabled
-  mod set, including ours.
+- The Paradox Launcher was **not** required for the mod set to load: launching `Cities2.exe`
+  directly did load the enabled mods, including ours.
+- **But do not launch `Cities2.exe` directly.** Operator-confirmed 2026-11-28: bypassing Steam and
+  the Paradox launcher leaves a permanent black-frame process. The supported path is
+  `steam://rungameid/949230` followed by the launcher's Play button. The mod-load evidence above
+  remains valid; the launch method used to obtain it does not.
 
 Caution when editing this file: a literal PowerShell replace through `cmd.exe` produced doubled
 backslashes and a path the game would not match. Validate after writing by parsing the JSON and
