@@ -114,28 +114,46 @@ def launcher_window():
 
 def cmd_play(args):
     deadline = time.time() + args.timeout
+    win = None
     while time.time() < deadline:
         app, win = launcher_window()
         if win is not None:
             break
         time.sleep(5)
-    else:
+    if win is None:
         print("launcher window not found", file=sys.stderr)
         return 3
 
+    buttons = []
     names = []
-    try:
-        names = [b.window_text() for b in win.descendants(control_type="Button")]
-    except Exception:  # noqa: BLE001
-        pass
-    play = next((n for n in names if re.search(r"\bplay\b", n, re.I)), None)
-    if play is None:
-        print("no Play button exposed; launcher buttons=" + json.dumps(names[:20]), file=sys.stderr)
-        return 4
+    while time.time() < deadline:
+        try:
+            buttons = list(win.descendants(control_type="Button"))
+        except Exception:  # noqa: BLE001
+            buttons = []
+        names = [(b.window_text() or "").strip() for b in buttons]
+        if any(n.upper() in ("RESUME", "PLAY") for n in names):
+            break
+        time.sleep(3)
 
-    win.child_window(title=play, control_type="Button").click_input()
-    print("clicked " + play)
-    return 0
+    order = ["RESUME", "PLAY"] if not args.prefer else [args.prefer.upper()]
+    for label in order:
+        target = next((b for b, n in zip(buttons, names) if n.upper() == label), None)
+        if target is None:
+            continue
+        try:
+            # Invoke pattern drives the control without moving the cursor or taking focus.
+            target.invoke()
+            print("invoked " + label)
+        except Exception as exc:  # noqa: BLE001
+            print("invoke failed for " + label + " (" + str(exc) + "); falling back to click",
+                  file=sys.stderr)
+            target.click_input()
+            print("clicked " + label)
+        return 0
+
+    print("no RESUME or PLAY button; launcher buttons=" + json.dumps(names[:20]), file=sys.stderr)
+    return 4
 
 
 def cmd_await_mod(args):
@@ -170,12 +188,20 @@ def cmd_stop(args):
         return 0
     import win32con
     import win32gui
+    import win32process
 
-    def close_visible(h, _):
-        if win32gui.IsWindowVisible(h) and win32gui.GetWindowText(h):
-            win32gui.PostMessage(h, win32con.WM_CLOSE, 0, 0)
+    def close_game_window(h, _):
+        try:
+            _, pid = win32process.GetWindowThreadProcessId(h)
+        except Exception:  # noqa: BLE001
+            return
+        if pid in pids and win32gui.IsWindowVisible(h):
+            try:
+                win32gui.PostMessage(h, win32con.WM_CLOSE, 0, 0)
+            except Exception:  # noqa: BLE001
+                pass
 
-    win32gui.EnumWindows(close_visible, None)
+    win32gui.EnumWindows(close_game_window, None)
     for _ in range(24):
         if not game_pids():
             print("closed")
@@ -201,6 +227,8 @@ def main(argv):
 
     p = sub.add_parser("play")
     p.add_argument("--timeout", type=int, default=600)
+    p.add_argument("--prefer", choices=["resume", "play"], default=None,
+                   help="which launcher button to activate (default: RESUME, else PLAY)")
     p.set_defaults(func=cmd_play)
 
     p = sub.add_parser("await-mod")

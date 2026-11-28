@@ -69,10 +69,10 @@ namespace Wsii.P1H
                     return;
                 }
 
-                IAssetData asset = Lookup(user, save);
+                IAssetData asset = FindSave(user, Path.GetFileName(save));
                 if (asset == null)
                 {
-                    Mod.Log("autoload: asset lookup failed for " + Path.GetFileName(save));
+                    Mod.Log("autoload: no asset matched " + Path.GetFileName(save));
                     return;
                 }
 
@@ -103,21 +103,38 @@ namespace Wsii.P1H
             Mod.Log("autoload: no AutoLoad(IAssetData) overload found by reflection");
         }
 
-        private static IAssetData Lookup(IAssetDatabase user, string savePath)
+        /// <summary>
+        /// GetAsset(path) throws AssetDatabaseRequestException for save files (observed in game),
+        /// so match the save by name against the user database's asset list instead.
+        /// </summary>
+        private static IAssetData FindSave(IAssetDatabase user, string fileName)
         {
-            foreach (string key in new[] { Path.GetFileName(savePath), Path.GetFileNameWithoutExtension(savePath), savePath })
+            string stem = Path.GetFileNameWithoutExtension(fileName);
+            int seen = 0;
+
+            foreach (AssetData data in user.GetAssets(default(SearchFilter<AssetData>)))
             {
-                try
+                if (data == null)
                 {
-                    var asset = user.GetAsset(key);
-                    if (asset != null)
-                    {
-                        return asset;
-                    }
+                    continue;
                 }
-                catch (Exception ex)
+
+                string path = data.path ?? string.Empty;
+                string name = data.name ?? string.Empty;
+
+                if (seen < 5 && (path.IndexOf("Saves", StringComparison.OrdinalIgnoreCase) >= 0
+                                 || name.IndexOf(stem, StringComparison.OrdinalIgnoreCase) >= 0))
                 {
-                    Mod.Log("autoload: GetAsset(" + key + ") threw " + ex.GetType().Name);
+                    Mod.Log("autoload: candidate " + name + " path=" + path);
+                    seen++;
+                }
+
+                if (string.Equals(name, fileName, StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(name, stem, StringComparison.OrdinalIgnoreCase)
+                    || path.EndsWith(fileName, StringComparison.OrdinalIgnoreCase)
+                    || path.EndsWith(stem, StringComparison.OrdinalIgnoreCase))
+                {
+                    return data;
                 }
             }
 

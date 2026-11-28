@@ -16,6 +16,7 @@
   <ItemGroup>
     <Reference Include="Game"><HintPath>$(GameManaged)\Game.dll</HintPath><Private>false</Private></Reference>
     <Reference Include="Unity.Entities"><HintPath>$(GameManaged)\Unity.Entities.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Colossal.AssetPipeline"><HintPath>$(GameManaged)\Colossal.AssetPipeline.dll</HintPath><Private>false</Private></Reference>
     <Reference Include="Colossal.IO.AssetDatabase"><HintPath>$(GameManaged)\Colossal.IO.AssetDatabase.dll</HintPath><Private>false</Private></Reference>
     <Reference Include="Colossal.Core"><HintPath>$(GameManaged)\Colossal.Core.dll</HintPath><Private>false</Private></Reference>
     <Reference Include="UnityEngine.CoreModule"><HintPath>$(GameManaged)\UnityEngine.CoreModule.dll</HintPath><Private>false</Private></Reference>
