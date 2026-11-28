@@ -4,3 +4,5 @@ artifacts/
 *.user
 .vs/
 p1h.log
+__pycache__/
+*.pyc
