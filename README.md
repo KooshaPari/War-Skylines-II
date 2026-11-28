@@ -15,6 +15,7 @@ semantics (proved offline in `wsii-enhancement/p1r`) into the real game runtime.
 | `src/Wsii.P1H/fixtures/commands.txt` | Shared fixture, replayed identically by the mod and by the offline checks |
 | `tests/Wsii.P1H.Semantics/` | Zero-dependency console checks over that same fixture |
 | `tools/cs2ctl.py` | **Supported way to drive the game**: launch via Steam, press Play in the launcher, await the mod's OnLoad, collect evidence, stop gracefully |
+| `tools/selftest-cs2ctl.py` | Proves the parsing works, that launch refuses the wrong states, and that no script launches `Cities2.exe` directly |
 | `skills/cs2-ops/SKILL.md` | Project skill: rules and failure modes for CS2 evidence runs. Never launch `Cities2.exe` directly |
 | `scripts/check.ps1` | One gate: build, semantics, artifact checks, deploy freshness. `-Deploy` also installs |
 | `scripts/selftest-gate.ps1` | Proves the gate can fail: stale install, missing game ABI, foreign assembly, corrupted binary |
